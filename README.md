@@ -24,6 +24,8 @@ Local lint checks are heuristic and explain their remediation. Trivy supplies br
 Use Python 3.10 or later. Install Trivy 0.76.1 and Semgrep 1.182.1 from official releases using your approved tool manager; install ShellCheck if your project contains shell scripts. Docker is not required by the Python CLI; Trivy can pull the registry image directly.
 
 ```sh
+git clone https://github.com/THEJANAIDU/pipeline-aegis.git
+cd pipeline-aegis
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install . semgrep==1.182.1 ruff==0.14.14
