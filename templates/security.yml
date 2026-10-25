@@ -1,0 +1,45 @@
+# Store this template, agent, rules, policy and toolchain in a protected security repo.
+# Configure a Required template check on the protected deployment resources.
+parameters:
+- name: image
+  type: string
+- name: securityRepository
+  type: string
+  default: security
+stages:
+- stage: Security
+  displayName: Pipeline Aegis security gate
+  jobs:
+  - job: Scan
+    pool:
+      name: AegisSecurityEphemeral
+    steps:
+    - checkout: self
+      path: s/application
+      clean: true
+      persistCredentials: false
+    - checkout: ${{ parameters.securityRepository }}
+      path: s/security
+      clean: true
+      persistCredentials: false
+    - bash: |
+        set -euo pipefail
+        # Toolchain is administered separately. Never install from application manifests.
+        python3 -m venv "$AGENT_TEMPDIRECTORY/aegis-venv"
+        "$AGENT_TEMPDIRECTORY/aegis-venv/bin/pip" install "$PIPELINE_WORKSPACE/s/security"
+        command -v trivy
+        command -v semgrep
+        "$AGENT_TEMPDIRECTORY/aegis-venv/bin/aegis" scan \
+          --repo "$PIPELINE_WORKSPACE/s/application" \
+          --policy "$PIPELINE_WORKSPACE/s/security/policy.json" \
+          --image "$AEGIS_IMAGE" \
+          --output "$AGENT_TEMPDIRECTORY/aegis-results"
+      displayName: Scan exact deployment image and source
+      env:
+        AEGIS_IMAGE: ${{ parameters.image }}
+    - task: PublishPipelineArtifact@1
+      condition: succeededOrFailed()
+      inputs:
+        targetPath: $(Agent.TempDirectory)/aegis-results
+        artifact: aegis-security
+      displayName: Publish redacted security evidence

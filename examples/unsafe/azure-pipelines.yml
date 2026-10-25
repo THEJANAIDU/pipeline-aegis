@@ -1,0 +1,6 @@
+# Deliberately unsafe: do not use this pipeline.
+steps:
+- checkout: self
+  persistCredentials: true
+- task: Example
+  continueOnError: true

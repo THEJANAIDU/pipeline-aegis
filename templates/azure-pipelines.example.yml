@@ -1,0 +1,16 @@
+# Example wiring. Replace organization/project/repo and protected release tag.
+# Azure Repos PR checks must be configured as branch build-validation policies.
+trigger:
+  branches:
+    include: [main]
+resources:
+  repositories:
+  - repository: security
+    type: git
+    name: Platform/pipeline-aegis
+    ref: refs/tags/v0.1.0
+extends:
+  template: templates/security.yml@security
+  parameters:
+    # Supply the digest from the successful image build, never a mutable latest tag.
+    image: 'registry.example.com/team/app@sha256:REPLACE_WITH_64_HEX_DIGEST'

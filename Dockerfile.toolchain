@@ -1,0 +1,12 @@
+# Development recipe. Pin the resolved Python base digest and full pip hashes
+# through your reviewed image factory before use on protected deployments.
+FROM aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c AS trivy
+FROM python:3.12-slim
+RUN apt-get update && apt-get install -y --no-install-recommends shellcheck ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=trivy /usr/local/bin/trivy /usr/local/bin/trivy
+RUN pip install --no-cache-dir semgrep==1.182.1 ruff==0.14.14 PyYAML==6.0.3
+COPY . /opt/aegis
+RUN pip install --no-cache-dir /opt/aegis && useradd -m -u 10001 aegis
+USER 10001
+WORKDIR /home/aegis
+ENTRYPOINT ["aegis"]

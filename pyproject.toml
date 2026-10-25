@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "pipeline-aegis"
+version = "0.1.0"
+description = "Fail-closed security orchestration for Azure DevOps"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0.2,<7"]
+license = "Apache-2.0"
+[project.scripts]
+aegis = "aegis.cli:main"
+[tool.setuptools.package-data]
+aegis = ["rules.yml"]
+[tool.setuptools]
+packages = ["aegis"]

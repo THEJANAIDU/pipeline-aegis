@@ -1,0 +1,21 @@
+rules:
+  - id: python-shell-execution
+    languages: [python]
+    severity: ERROR
+    message: Avoid shell=True; use an argument array and validate inputs.
+    pattern: subprocess.$METHOD(..., shell=True, ...)
+  - id: python-unsafe-deserialization
+    languages: [python]
+    severity: ERROR
+    message: Pickle can execute code; use a safe data format for untrusted input.
+    pattern: pickle.loads(...)
+  - id: python-tls-verification-disabled
+    languages: [python]
+    severity: ERROR
+    message: Enable TLS certificate verification.
+    pattern: requests.$METHOD(..., verify=False, ...)
+  - id: javascript-dynamic-eval
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: Avoid dynamic eval with application data.
+    pattern: eval(...)
